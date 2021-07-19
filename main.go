@@ -27,6 +27,8 @@ func initConfig() aws.Config {
 		cfg, err = config.LoadDefaultConfig(context.TODO(), config.WithRegion(*region))
 	} else if *profile != "" {
 		cfg, err = config.LoadDefaultConfig(context.TODO(), config.WithSharedConfigProfile(*profile))
+	} else {
+		cfg, err = config.LoadDefaultConfig(context.TODO())
 	}
 
 	if err != nil {

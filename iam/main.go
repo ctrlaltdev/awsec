@@ -1,6 +1,7 @@
 package iam
 
 import (
+	"awsec/iam/types"
 	"fmt"
 	"os"
 	"strings"
@@ -41,45 +42,45 @@ func Report() {
 
 	for _, report := range reports {
 		var keysAge []string
-		for _, key := range report.keys {
-			keysAge = append(keysAge, justamin.Duration(*key.createdAt))
+		for _, key := range report.Keys {
+			keysAge = append(keysAge, justamin.Duration(*key.CreatedAt))
 		}
 
 		var lastConn string
-		if report.passwordLastUsed != nil {
-			lastConn = justamin.Duration(*report.passwordLastUsed)
+		if report.PasswordLastUsed != nil {
+			lastConn = justamin.Duration(*report.PasswordLastUsed)
 		}
 
-		fmt.Fprintf(w, format, *report.name, lastConn, strings.Join(keysAge, ", "))
+		fmt.Fprintf(w, format, *report.Name, lastConn, strings.Join(keysAge, ", "))
 	}
 
 	defer w.Flush()
 }
 
-func Check() (userReports []userReportFormat) {
+func Check() (userReports []types.UserReportFormat) {
 	users := ListUsers()
 
 	for _, user := range users {
 
-		var report userReportFormat
+		var report types.UserReportFormat
 
-		report.name = user.UserName
-		report.passwordLastUsed = user.PasswordLastUsed
+		report.Name = user.UserName
+		report.PasswordLastUsed = user.PasswordLastUsed
 
 		keys := ListAccessKeys(user.UserName)
 
 		for _, key := range keys {
 
-			var keyReport accessKeyReportFormat
+			var keyReport types.AccessKeyReportFormat
 
-			keyReport.id = key.AccessKeyId
-			keyReport.createdAt = key.CreateDate
+			keyReport.ID = key.AccessKeyId
+			keyReport.CreatedAt = key.CreateDate
 
 			if key.Status == "Active" {
-				keyReport.active = true
+				keyReport.Active = true
 			}
 
-			report.keys = append(report.keys, keyReport)
+			report.Keys = append(report.Keys, keyReport)
 
 		}
 

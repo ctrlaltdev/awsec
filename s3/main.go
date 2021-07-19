@@ -1,6 +1,7 @@
 package s3
 
 import (
+	"awsec/s3/types"
 	"fmt"
 	"os"
 	"strings"
@@ -38,41 +39,41 @@ func Report() {
 	reports := Check()
 
 	for _, report := range reports {
-		fmt.Fprintf(w, format, *report.name, strings.Join(report.full, ", "), strings.Join(report.write_acp, ", "), strings.Join(report.read_acp, ", "), strings.Join(report.write, ", "), strings.Join(report.read, ", "), report.versioning, strings.Join(report.encryption, ", "))
+		fmt.Fprintf(w, format, *report.Name, strings.Join(report.Full, ", "), strings.Join(report.Write_acp, ", "), strings.Join(report.Read_acp, ", "), strings.Join(report.Write, ", "), strings.Join(report.Read, ", "), report.Versioning, strings.Join(report.Encryption, ", "))
 	}
 
 	defer w.Flush()
 }
 
-func Check() (s3Reports []bucketReportFormat) {
+func Check() (s3Reports []types.BucketReportFormat) {
 	buckets := ListBuckets()
 
 	for _, bucket := range buckets {
 
-		report := bucketReportFormat{}
-		report.name = bucket.Name
+		report := types.BucketReportFormat{}
+		report.Name = bucket.Name
 		loc := GetBucketLocation(bucket.Name)
-		report.region = &loc.LocationConstraint
+		report.Region = &loc.LocationConstraint
 
-		vers := GetBucketVersioning(report.name, string(*report.region))
+		vers := GetBucketVersioning(report.Name, string(*report.Region))
 		if vers.Status == "Enabled" {
-			report.versioning = "enabled"
+			report.Versioning = "enabled"
 		} // else {
 		// 	report.versioning = "disabled"
 		// }
 
-		enc := GetBucketEncryption(report.name, string(*report.region))
+		enc := GetBucketEncryption(report.Name, string(*report.Region))
 		if enc.ServerSideEncryptionConfiguration != nil {
 			for _, rule := range enc.ServerSideEncryptionConfiguration.Rules {
 				if rule.ApplyServerSideEncryptionByDefault != nil {
-					report.encryption = append(report.encryption, string(rule.ApplyServerSideEncryptionByDefault.SSEAlgorithm))
+					report.Encryption = append(report.Encryption, string(rule.ApplyServerSideEncryptionByDefault.SSEAlgorithm))
 				}
 			}
 		}
 
-		acl := GetBucketACL(report.name, string(*report.region))
+		acl := GetBucketACL(report.Name, string(*report.Region))
 		if acl.Owner.DisplayName != nil {
-			report.owner = acl.Owner
+			report.Owner = acl.Owner
 		}
 
 		for _, grant := range acl.Grants {

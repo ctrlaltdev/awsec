@@ -1,22 +1,23 @@
 package s3
 
 import (
+	t "awsec/s3/types"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
 
-func bucketGrantAssign(data *bucketReportFormat, grantee string, perm types.Permission) {
+func bucketGrantAssign(data *t.BucketReportFormat, grantee string, perm types.Permission) {
 	if perm == "FULL_CONTROL" {
-		data.full = append(data.full, grantee)
+		data.Full = append(data.Full, grantee)
 	} else if perm == "WRITE" {
-		data.write = append(data.write, grantee)
+		data.Write = append(data.Write, grantee)
 	} else if perm == "WRITE_ACP" {
-		data.write_acp = append(data.write_acp, grantee)
+		data.Write_acp = append(data.Write_acp, grantee)
 	} else if perm == "READ" {
-		data.read = append(data.read, grantee)
+		data.Read = append(data.Read, grantee)
 	} else if perm == "READ_ACP" {
-		data.read_acp = append(data.read_acp, grantee)
+		data.Read_acp = append(data.Read_acp, grantee)
 	}
 }
 
