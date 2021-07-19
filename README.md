@@ -42,28 +42,31 @@ In those cases, you need to initialize the module with an aws config:
 package main
 
 import (
-  "github.com/aws/aws-sdk-go-v2/aws"
+	"context"
+	"log"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/config"
-  "github.com/ctrlaltdev/awsec/iam"
-  "github.com/ctrlaltdev/awsec/s3"
+	"github.com/ctrlaltdev/awsec/iam"
+	"github.com/ctrlaltdev/awsec/s3"
 )
 
 var cfg aws.Config
 
 func main() {
-  var err error
-  cfg, err = config.LoadDefaultConfig(context.TODO())
+	var err error
+	cfg, err = config.LoadDefaultConfig(context.TODO())
 
-  if err != nil {
+	if err != nil {
 		log.Fatalf("unable to load SDK config, %v", err)
 	}
 
-  s3.Init(&cfg)
+	s3.Init(&cfg)
 	iam.Init(&cfg)
 
-  s3Reports := s3.Check()
-  iamReports := iam.Check()
+	s3Reports := s3.Check()
+	iamReports := iam.Check()
 
-  // ...
+	// ...
 }
 ```
